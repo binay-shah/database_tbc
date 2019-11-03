@@ -1,0 +1,83 @@
+select * from emp;
+
+----------
+
+declare
+    emp_number INTEGER := 7369;
+    emp_name varchar2(100);
+begin
+    select ename into emp_name from emp where empno = emp_number;
+    dbms_output.put_line('Employee name is '|| emp_name);
+end;   
+/
+-----------user imput---------bind variables
+declare    
+    emp_name varchar2(100);
+begin
+    select ename into emp_name from emp where empno = :emp_num;
+    dbms_output.put_line('Employee name is '|| emp_name);
+end;   
+/
+
+
+-------exceptions-----------
+declare
+    emp_number INTEGER := 0;
+    emp_name varchar2(100);
+begin
+    select ename into emp_name from emp where empno = emp_number;
+    dbms_output.put_line('Employee name is '|| emp_name);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+           dbms_output.put_line('No such employee '|| emp_name); 
+end;   
+/
+
+---------
+
+---The %TYPE attribute lets you declare a constant, variable, field, or parameter to be of the same data type a previously declared variable, field, 
+--record, nested table, or database column. If the referenced item changes, your declaration is automatically updated.
+declare
+    emp_number emp.empno%TYPE := 0;
+    emp_name emp.ename%TYPE;
+begin
+    select ename into emp_name from emp where empno = emp_number;
+    dbms_output.put_line('Employee name is '|| emp_name);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+           dbms_output.put_line('No such employee '|| emp_name); 
+end;   
+/
+----------
+declare 
+    v_empid emp.empno%type;
+    v_firstname emp.ename%type;
+    v_deptname dept.dname%type;
+begin
+    select e.empno, e.ename, d.dname
+        into v_empid, v_firstname, v_deptname
+    from emp e, dept d
+    where e.empno = :g_empid
+    and e.deptno = d.deptno;
+    
+    dbms_output.put_line('The employee '||v_firstname||' is in the department '|| v_deptname);
+    
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+           dbms_output.put_line('The employee: '|| :g_empid||' is not in the company'); 
+END;   
+/
+---------
+    
+
+
+
+
+
+
+
+
+
+
+
+
