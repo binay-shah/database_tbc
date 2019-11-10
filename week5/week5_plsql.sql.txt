@@ -1,0 +1,91 @@
+CREATE OR REPLACE PROCEDURE ship_cost_sp(
+    p_qty IN NUMBER,
+    p_ship OUT NUMBER
+) is
+
+BEGIN
+    IF p_qty > 10 THEN
+        p_ship := 11.00;
+    ELSIF p_qty > 5 THEN
+        p_ship := 8.00;
+    ELSE
+        p_ship := 5.00;
+    END IF;        
+END;
+/
+
+DECLARE
+    p_ship NUMBER(6, 2);
+BEGIN
+    ship_cost_sp(2, p_ship);
+    DBMS_OUTPUT.PUT_LINE('Shipping costs is: '|| p_ship);
+END;    
+/
+---------------
+
+CREATE OR REPLACE PROCEDURE phone_fmt_sp(
+    p_phone IN OUT VARCHAR2
+) IS
+BEGIN
+    p_phone := '(' || SUBSTR(p_phone, 1, 3) || ')' ||
+                      SUBSTR(p_phone, 4, 3) || '-'  || 
+                      SUBSTR(p_phone, 7, 4);
+END;
+/
+
+DECLARE
+    g_phone VARCHAR2(13);
+BEGIN
+    g_phone := '111222333';
+    phone_fmt_sp(g_phone);
+    DBMS_OUTPUT.PUT_LINE(g_phone);
+END;    
+/
+-----------------
+
+CREATE OR REPLACE PROCEDURE adjust_salary( 
+    in_employee_id IN emp.empno%TYPE,
+    in_percent IN NUMBER
+) IS 
+BEGIN
+-- update employee's salary 
+    UPDATE emp
+    SET sal= sal + sal * in_percent / 100 
+    WHERE empno= in_employee_id;
+END;
+/
+---Write a code to call procedure adjust_salary in order to increase salary for employee 7566 with 20%
+
+-------functions---------
+
+select round(avg(sal)) from emp;
+
+CREATE OR REPLACE FUNCTION memfmt1_sf
+    (p_id IN NUMBER,
+     p_first IN VARCHAR2,
+     p_last IN VARCHAR2
+)
+RETURN VARCHAR2
+IS
+ lv_mem_txt VARCHAR2(35);
+BEGIN
+lv_mem_txt := 'Member '||p_id||' - '||p_first||'
+ '||p_last;
+RETURN lv_mem_txt;
+END;
+/
+
+
+select memfmt1_sf(7369, 'Smith', 'Ford') from dual;
+----------
+--------
+convert ship_cost_sp procedure to function
+
+
+
+    
+    
+
+
+    
+    
