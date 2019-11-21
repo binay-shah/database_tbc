@@ -1,0 +1,83 @@
+-----packages-------collection of plsql objects-------
+CREATE OR REPLACE PACKAGE package_name
+IS
+    PROCEDURE sal_raise(employee_no NUMBER, percent NUMBER);
+    FUNCTION get_sal(employee_no NUMBER) RETURN NUMBER;
+END;    
+/
+
+CREATE OR REPLACE PACKAGE BODY package_name
+IS
+    PROCEDURE sal_raise (employee_no NUMBER, percent NUMBER) 
+    IS
+    BEGIN
+        UPDATE emp set sal = sal + sal * percent/100 
+        WHERE empno = employee_no;
+    END sal_raise;    
+    
+    FUNCTION get_sal(employee_no NUMBER) 
+        RETURN NUMBER
+    IS
+        v_sal NUMBER;
+    BEGIN
+        SELECT SAL INTO v_sal from emp where empno = employee_no;
+        return v_sal;
+    END get_sal;
+    
+END package_name;  
+/
+
+begin
+   package_name.sal_raise(7369, 12); 
+end;
+
+select package_name.get_sal(7369) from dual;
+
+select * from emp;
+
+------EXCEPTIONS---------------
+DECLARE
+  v_deptno NUMBER := 500;
+  v_name VARCHAR2(20) := 'Testing';
+  e_invalid_department EXCEPTION;
+BEGIN
+  UPDATE dept
+  SET dname = v_name
+  WHERE deptno = v_deptno;
+  IF SQL%NOTFOUND THEN
+      RAISE e_invalid_department;
+      --RAISE_APPLICATION_ERROR(-20202, 'This is not a valid deptno');
+END IF;
+  COMMIT;
+EXCEPTION
+WHEN   
+    e_invalid_department THEN
+    DBMS_OUTPUT.PUT_LINE('No such department id.'); 
+END;
+------------------------
+------------------------
+DECLARE
+  v_deptno NUMBER := 500;
+  v_name VARCHAR2(20) := 'Testing';
+  e_invalid_department EXCEPTION;
+BEGIN
+  UPDATE dept
+  SET dname = v_name
+  WHERE deptno = v_deptno;
+  IF SQL%NOTFOUND THEN
+      RAISE e_invalid_department;
+END IF;
+  COMMIT;
+EXCEPTION
+    WHEN   
+        e_invalid_department THEN
+        DBMS_OUTPUT.PUT_LINE('No such department id.'); 
+    WHEN NO_DATA_FOUND THEN    
+        DBMS_OUTPUT.PUT_LINE('NO data found exception.');
+    WHEN TOO_MANY_ROWS THEN    
+        DBMS_OUTPUT.PUT_LINE('TOO_MANY_ROWS');    
+    WHEN OTHERS THEN 
+        DBMS_OUTPUT.PUT_LINE('OTHERS'); 
+    
+END;
+
