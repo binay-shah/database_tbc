@@ -34,6 +34,19 @@ end;
 /
 
 ---------
+DECLARE  
+    v_empno emp.empno%TYPE; 
+    v_name emp.ename%TYPE;
+BEGIN
+    SELECT empno, ename INTO  v_empno, v_name FROM emp 
+    WHERE deptno =30;
+     DBMS_OUTPUT.PUT_LINE( v_empno ||' '||v_name);
+EXCEPTION
+  WHEN TOO_MANY_ROWS THEN
+    DBMS_OUTPUT.PUT_LINE (' Your select statement retrieved multiple rows. Consider using a cursor.');
+END;
+/
+-------------
 
 ---The %TYPE attribute lets you declare a constant, variable, field, or parameter to be of the same data type a previously declared variable, field, 
 --record, nested table, or database column. If the referenced item changes, your declaration is automatically updated.
@@ -68,7 +81,103 @@ begin
 END;   
 /
 ---------
+
+-----cursor example----------
+DECLARE
+  CURSOR c_emp_cursor IS
+    SELECT empno, ename FROM emp
+    WHERE deptno =30;
     
+    v_empno emp.empno%TYPE; 
+    v_name emp.ename%TYPE;
+BEGIN
+    OPEN c_emp_cursor;
+    FETCH c_emp_cursor INTO v_empno, v_name; 
+    DBMS_OUTPUT.PUT_LINE( v_empno ||' '||v_name);
+END; 
+/
+-------cursor with loops-----------
+DECLARE
+  CURSOR c_emp_cursor IS
+    SELECT empno, ename FROM emp
+    WHERE deptno =30;
+    
+    v_empno emp.empno%TYPE; 
+    v_name emp.ename%TYPE;
+BEGIN
+    OPEN c_emp_cursor;
+    LOOP
+        FETCH c_emp_cursor INTO v_empno, v_name;
+        EXIT WHEN c_emp_cursor%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE( v_empno ||' '||v_name);
+    END LOOP;
+END; 
+/
+------------
+-----simple if ----------
+
+DECLARE
+  v_myage  number:=31;
+BEGIN
+  IF v_myage  < 11  THEN
+    DBMS_OUTPUT.PUT_LINE(' I am a child '); 
+  END IF;
+END; 
+/
+
+------IF THEN ELSE Statement------
+DECLARE
+  v_myage  number:=31;
+BEGIN
+  IF v_myage  < 11 THEN
+    DBMS_OUTPUT.PUT_LINE(' I am a child ');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE(' I am not a child ');
+  END IF; 
+END;
+/
+--------------IF ELSIF ELSE Clause----------
+DECLARE
+  v_myage number:=31;
+BEGIN
+  IF v_myage  < 11 THEN
+       DBMS_OUTPUT.PUT_LINE(' I am a child ');
+    ELSIF v_myage  < 20 THEN
+       DBMS_OUTPUT.PUT_LINE(' I am young ');
+    ELSIF v_myage  < 30 THEN
+       DBMS_OUTPUT.PUT_LINE(' I am in my twenties');
+    ELSIF v_myage  < 40 THEN
+       DBMS_OUTPUT.PUT_LINE(' I am in my thirties');
+    ELSE
+       DBMS_OUTPUT.PUT_LINE(' I am always young ');
+  END IF;
+END; 
+/
+----------------------
+-------user defined exceptionds-----------
+DECLARE
+  v_deptno NUMBER := 500;
+  v_name VARCHAR2(20) := 'Testing';
+  e_invalid_department EXCEPTION;
+BEGIN
+  UPDATE dept
+  SET dname = v_name
+  WHERE deptno = v_deptno;
+  IF SQL%NOTFOUND THEN
+       --RAISE e_invalid_department;
+       RAISE_APPLICATION_ERROR(-20201, 'application error- No such department id.-');
+   END IF;
+  COMMIT;
+EXCEPTION  
+    WHEN e_invalid_department THEN 
+        DBMS_OUTPUT.PUT_LINE('No such department id.');
+END;
+/
+
+
+    
+
+
 
 
 
